@@ -1,0 +1,27 @@
+version: '3.8'
+
+services:
+  yomitoku:
+    build: .
+    # container_name: japanese_ocr  # runコマンドでは使われない（upコマンド用）
+    volumes:
+      # PDFファイルと出力ディレクトリをマウント
+      - ./input_files:/app/input_files
+      - ./output:/app/output
+      - ./processed_files:/app/processed_files
+      # モデルキャッシュを永続化（初回ダウンロード後は再利用）
+      - yomitoku_cache:/root/.cache
+    # デフォルトでインタラクティブモードにする
+    stdin_open: true
+    tty: true
+    # GPUを使用する場合は以下をコメントアウト解除
+    # deploy:
+    #   resources:
+    #     reservations:
+    #       devices:
+    #         - driver: nvidia
+    #           count: 1
+    #           capabilities: [gpu]
+
+volumes:
+  yomitoku_cache:
