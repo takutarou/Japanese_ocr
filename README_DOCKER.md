@@ -121,7 +121,56 @@ sudo apt-get install podman podman-compose
 | **Windows** | Rancher Desktop | GUI付き、完全無料 |
 | **会社PC（大企業）** | Colima or Rancher Desktop | ライセンス問題なし |
 
-## セットアップ手順
+## Colima使用時の一連の手順（macOS）
+
+Colimaをセットアップ済みの場合、以下の手順でOCRを実行できます：
+
+### 1. Colimaを起動
+
+```bash
+# 起動（リソース指定推奨）
+colima start --cpu 4 --memory 8
+
+# 起動確認
+docker ps
+```
+
+### 2. プロジェクトディレクトリに移動
+
+```bash
+cd /path/to/japanese_ocr
+```
+
+### 3. Dockerイメージのビルド（初回のみ）
+
+```bash
+docker-compose build
+```
+
+初回は5-10分程度かかります。2回目以降はキャッシュが効いて高速です。
+
+### 4. OCRの実行
+
+```bash
+# Markdown形式で出力
+docker-compose run --rm yomitoku yomitoku /app/target_files/test1.pdf -f md -o /app/output
+
+# JSON形式で出力
+docker-compose run --rm yomitoku yomitoku /app/target_files/test1.pdf -f json -o /app/output
+```
+
+### 5. 作業完了後、Colimaを停止
+
+```bash
+# リソース節約のため、使い終わったら停止
+colima stop
+```
+
+次回使用時は、再度 `colima start` からやり直してください。
+
+---
+
+## セットアップ手順（詳細）
 
 ### 1. プロジェクトディレクトリに移動
 
@@ -327,11 +376,20 @@ japanese_ocr/
     └── (処理したいPDFファイル)
 ```
 
-会社PCで:
+会社PCで（Colima使用の場合）:
 
 ```bash
+# 1. Colimaを起動
+colima start --cpu 4 --memory 8
+
+# 2. イメージをビルド
 docker-compose build
+
+# 3. OCRを実行
 docker-compose run --rm yomitoku yomitoku /app/target_files/yourfile.pdf -f md -o /app/output
+
+# 4. 作業完了後、Colimaを停止
+colima stop
 ```
 
 これだけで全く同じ環境が再現されます！
